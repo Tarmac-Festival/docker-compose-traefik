@@ -1,0 +1,44 @@
+services:
+  traefik:
+    restart: unless-stopped
+    image: "traefik:v3.5.0"
+    container_name: "traefik"
+    environment:
+      HETZNER_API_KEY: "${TRAEFIK_ACME_HETZNER_API_KEY}"
+    command:
+      - "--log.level=INFO"
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.asDefault=true"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_MAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=hetzner"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+    labels:
+      - "traefik.enable=True"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_URL}`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=adminauth"
+      - "traefik.http.middlewares.adminauth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - ingress
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik_acme_storage:/etc/traefik/acme"
+
+networks:
+  ingress:
+    name: ingress
