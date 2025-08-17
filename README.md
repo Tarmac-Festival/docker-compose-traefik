@@ -13,23 +13,23 @@ The following is assumed:
 
 1. clone repository
 2. create admin dashboard credentials
-```
+```bash
 htpasswd -bnBC 8 admin "${password}"
 ```
 3. create `.env` file (configure **all** variables according to your setup)
-```
+```bash
 cp env.sample .env
 vim .env
 ```
 4. start project
-```
+```bash
 docker compose up -d
 ```
 
 ## expose containers
 
 To expose containers add the following override `docker-compose.override.yml` file to your project:
-```
+```yaml
 services:
   example:
     labels:
