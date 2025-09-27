@@ -1,10 +1,11 @@
 services:
   traefik:
     restart: unless-stopped
-    image: "traefik:v3.5.0"
+    image: "traefik:v3.5.3"
     container_name: "traefik"
     environment:
-      HETZNER_API_KEY: "${TRAEFIK_ACME_HETZNER_API_KEY}"
+      INWX_USERNAME: "${TRAEFIK_INWX_USERNAME}"
+      INWX_PASSWORD: "${TRAEFIK_INWX_PASSWORD}"
     command:
       - "--log.level=INFO"
       - "--api=true"
@@ -18,7 +19,7 @@ services:
       - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
       - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_MAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=hetzner"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=inwx"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
     labels:
       - "traefik.enable=True"
