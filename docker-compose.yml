@@ -4,8 +4,7 @@ services:
     image: "traefik:v3.5.3"
     container_name: "traefik"
     environment:
-      INWX_USERNAME: "${TRAEFIK_INWX_USERNAME}"
-      INWX_PASSWORD: "${TRAEFIK_INWX_PASSWORD}"
+      HURRICANE_TOKENS: "${TRAEFIK_HURRICANE_TOKENS}"
     command:
       - "--log.level=INFO"
       - "--api=true"
@@ -19,7 +18,7 @@ services:
       - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
       - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_MAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=inwx"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=hurricane"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
     labels:
       - "traefik.enable=True"
